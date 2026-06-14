@@ -1,0 +1,39 @@
+# Build directories
+build/
+build-*/
+
+# Qt Creator
+*.pro.user
+*.pro.user.*
+*.creator
+*.creator.user*
+*.includes
+*.config
+*.files
+
+# Compiled
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+
+# Moc
+moc_*
+qrc_*
+ui_*.h
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+
+# Other
+.qmake.stash
+.vs/
+.idea/
+*.user
