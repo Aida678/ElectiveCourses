@@ -2,6 +2,7 @@
 #include "ui_loginwindow.h"
 #include "controllers/AuthController.h"
 #include "views/MainWindow.h"
+#include "views/RegisterWindow.h"
 #include <QMessageBox>
 
 LoginWindow::LoginWindow(QWidget *parent)
@@ -31,7 +32,7 @@ void LoginWindow::onLoginClicked()
     }
 
     if (m_controller->login(email, password)) {
-        MainWindow* main = new MainWindow(nullptr, m_controller->currentUser());
+        MainWindow* main = new MainWindow(nullptr, m_controller, m_controller->currentUser());
         main->show();
         this->close();
     } else {
@@ -39,7 +40,9 @@ void LoginWindow::onLoginClicked()
     }
 }
 
+
 void LoginWindow::onRegisterClicked()
 {
-    // Можно оставить пустым или добавить позже
+    RegisterWindow regWindow(m_controller, this);
+    regWindow.exec();
 }

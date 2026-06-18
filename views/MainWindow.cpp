@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_mainwindow.h"
 #include "database/DatabaseManager.h"
+#include "controllers/AuthController.h"
 #include "controllers/StudentController.h"
 #include "controllers/TeacherController.h"
 #include "controllers/ElectiveController.h"
@@ -8,54 +9,59 @@
 #include <QMessageBox>
 #include <QTableWidgetItem>
 
-MainWindow::MainWindow(QWidget *parent, const User& user)
+MainWindow::MainWindow(QWidget *parent, AuthController* auth, const User& user)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_currentUser(user)
+    , m_auth(auth)
 {
     ui->setupUi(this);
+    setWindowTitle(QString("Управление факультативами - %1 (%2)")
+                       .arg(m_currentUser.email())
+                       .arg(m_auth ? m_auth->roleDisplayName() : "Без роли"));
 
-    setWindowTitle("Управление факультативами - " + m_currentUser.email());
-
-    // Подключаемся к БД, если не открыта
-    if (!DatabaseManager::instance().isOpen()) {
-        DatabaseManager::instance().connect("localhost", "ElectiveCoursesDB",
-                                            "postgres", "postgres");
+    if (m_auth) {
+        ui->statusbar->showMessage("Роль: " + m_auth->roleDisplayName());
     }
 
-    // Создаём контроллеры
-    m_studentController = new StudentController(this, this);
-    m_teacherController = new TeacherController(this, this);
-    m_electiveController = new ElectiveController(this, this);
-    m_learningController = new LearningController(this, this);
+    if (!DatabaseManager::instance().isOpen()) {
+        DatabaseManager::instance().connect("127.0.0.1", "ElectiveCoursesDB", "postgres", "Haroro14", 5433);
+    }
 
-    // --- Вкладка "Студенты" ---
+    m_studentController = new StudentController(this, m_auth);
+    m_teacherController = new TeacherController(this, m_auth);
+    m_electiveController = new ElectiveController(this, m_auth);
+    m_learningController = new LearningController(this, m_auth);
+
+    // --- Студенты ---
     connect(ui->btnStudentAdd, &QPushButton::clicked, this, &MainWindow::onStudentAddClicked);
     connect(ui->btnStudentUpdate, &QPushButton::clicked, this, &MainWindow::onStudentUpdateClicked);
     connect(ui->btnStudentDelete, &QPushButton::clicked, this, &MainWindow::onStudentDeleteClicked);
     connect(ui->btnStudentClear, &QPushButton::clicked, this, &MainWindow::onStudentClearClicked);
-    connect(ui->tableStudent, &QTableWidget::itemClicked, this, &MainWindow::onStudentTableClicked);
+    connect(ui->tableStudent, &QTableWidget::cellClicked, this, &MainWindow::onStudentTableClicked);
 
-    // --- Вкладка "Преподаватели" ---
+    // --- Преподаватели ---
     connect(ui->btnTeacherAdd, &QPushButton::clicked, this, &MainWindow::onTeacherAddClicked);
     connect(ui->btnTeacherUpdate, &QPushButton::clicked, this, &MainWindow::onTeacherUpdateClicked);
     connect(ui->btnTeacherDelete, &QPushButton::clicked, this, &MainWindow::onTeacherDeleteClicked);
     connect(ui->btnTeacherClear, &QPushButton::clicked, this, &MainWindow::onTeacherClearClicked);
-    connect(ui->tableTeacher, &QTableWidget::itemClicked, this, &MainWindow::onTeacherTableClicked);
+    connect(ui->tableTeacher, &QTableWidget::cellClicked, this, &MainWindow::onTeacherTableClicked);
 
-    // --- Вкладка "Факультативы" ---
+    // --- Факультативы ---
     connect(ui->btnElectiveAdd, &QPushButton::clicked, this, &MainWindow::onElectiveAddClicked);
     connect(ui->btnElectiveUpdate, &QPushButton::clicked, this, &MainWindow::onElectiveUpdateClicked);
     connect(ui->btnElectiveDelete, &QPushButton::clicked, this, &MainWindow::onElectiveDeleteClicked);
     connect(ui->btnElectiveClear, &QPushButton::clicked, this, &MainWindow::onElectiveClearClicked);
-    connect(ui->tableElective, &QTableWidget::itemClicked, this, &MainWindow::onElectiveTableClicked);
+    connect(ui->tableElective, &QTableWidget::cellClicked, this, &MainWindow::onElectiveTableClicked);
 
-    // --- Вкладка "Обучение" ---
+    // --- Обучение ---
     connect(ui->btnLearningAdd, &QPushButton::clicked, this, &MainWindow::onLearningAddClicked);
     connect(ui->btnLearningUpdate, &QPushButton::clicked, this, &MainWindow::onLearningUpdateClicked);
     connect(ui->btnLearningDelete, &QPushButton::clicked, this, &MainWindow::onLearningDeleteClicked);
     connect(ui->btnLearningClear, &QPushButton::clicked, this, &MainWindow::onLearningClearClicked);
-    connect(ui->tableLearning, &QTableWidget::itemClicked, this, &MainWindow::onLearningTableClicked);
+    connect(ui->tableLearning, &QTableWidget::cellClicked, this, &MainWindow::onLearningTableClicked);
+
+    updateUiForRole();
 }
 
 MainWindow::~MainWindow()
@@ -67,7 +73,34 @@ MainWindow::~MainWindow()
     delete m_learningController;
 }
 
-// === СТУДЕНТЫ ===
+void MainWindow::updateUiForRole()
+{
+    if (!m_auth) return;
+
+    bool canEditStudent = m_auth->canCreateStudent() || m_auth->canUpdateStudent() || m_auth->canDeleteStudent();
+    ui->btnStudentAdd->setVisible(canEditStudent);
+    ui->btnStudentUpdate->setVisible(canEditStudent);
+    ui->btnStudentDelete->setVisible(canEditStudent);
+    ui->btnStudentClear->setVisible(true);
+
+    bool canEditTeacher = m_auth->canCreateTeacher() || m_auth->canUpdateTeacher() || m_auth->canDeleteTeacher();
+    ui->btnTeacherAdd->setVisible(canEditTeacher);
+    ui->btnTeacherUpdate->setVisible(canEditTeacher);
+    ui->btnTeacherDelete->setVisible(canEditTeacher);
+    ui->btnTeacherClear->setVisible(true);
+
+    ui->btnElectiveAdd->setVisible(m_auth->canCreateElective());
+    ui->btnElectiveUpdate->setVisible(m_auth->canUpdateElective());
+    ui->btnElectiveDelete->setVisible(m_auth->canDeleteElective());
+    ui->btnElectiveClear->setVisible(true);
+
+    ui->btnLearningAdd->setVisible(m_auth->canCreateExamSheet());
+    ui->btnLearningUpdate->setVisible(m_auth->canUpdateExamSheet());
+    ui->btnLearningDelete->setVisible(m_auth->canDeleteExamSheet());
+    ui->btnLearningClear->setVisible(true);
+}
+
+// ========== Студенты ==========
 void MainWindow::onStudentAddClicked()
 {
     Student s;
@@ -115,7 +148,6 @@ void MainWindow::updateStudentTable(const QList<Student>& students)
     ui->tableStudent->setColumnCount(6);
     QStringList headers = {"ID", "Фамилия", "Имя", "Отчество", "Телефон", "Адрес"};
     ui->tableStudent->setHorizontalHeaderLabels(headers);
-
     for (int i = 0; i < students.size(); ++i) {
         const Student& s = students[i];
         ui->tableStudent->setItem(i, 0, new QTableWidgetItem(QString::number(s.id())));
@@ -153,7 +185,7 @@ void MainWindow::setStudentInputFields(const Student& s)
     ui->btnStudentDelete->setEnabled(true);
 }
 
-// === ПРЕПОДАВАТЕЛИ ===
+// ========== Преподаватели ==========
 void MainWindow::onTeacherAddClicked()
 {
     Teacher t;
@@ -201,7 +233,6 @@ void MainWindow::updateTeacherTable(const QList<Teacher>& teachers)
     ui->tableTeacher->setColumnCount(6);
     QStringList headers = {"ID", "Фамилия", "Имя", "Отчество", "Телефон", "User ID"};
     ui->tableTeacher->setHorizontalHeaderLabels(headers);
-
     for (int i = 0; i < teachers.size(); ++i) {
         const Teacher& t = teachers[i];
         ui->tableTeacher->setItem(i, 0, new QTableWidgetItem(QString::number(t.id())));
@@ -239,7 +270,7 @@ void MainWindow::setTeacherInputFields(const Teacher& t)
     ui->btnTeacherDelete->setEnabled(true);
 }
 
-// === ФАКУЛЬТАТИВЫ ===
+// ========== Факультативы ==========
 void MainWindow::onElectiveAddClicked()
 {
     Elective e;
@@ -281,7 +312,6 @@ void MainWindow::updateElectiveTable(const QList<Elective>& electives)
     ui->tableElective->setColumnCount(3);
     QStringList headers = {"ID", "Название", "Кафедра ID"};
     ui->tableElective->setHorizontalHeaderLabels(headers);
-
     for (int i = 0; i < electives.size(); ++i) {
         const Elective& e = electives[i];
         ui->tableElective->setItem(i, 0, new QTableWidgetItem(QString::number(e.id())));
@@ -310,7 +340,7 @@ void MainWindow::setElectiveInputFields(const Elective& e)
     ui->btnElectiveDelete->setEnabled(true);
 }
 
-// === ОБУЧЕНИЕ ===
+// ========== Обучение ==========
 void MainWindow::onLearningAddClicked()
 {
     StudentLearning l;
@@ -355,10 +385,9 @@ void MainWindow::onLearningTableClicked(int row, int column)
 void MainWindow::updateLearningTable(const QList<StudentLearning>& learnings)
 {
     ui->tableLearning->setRowCount(learnings.size());
-    ui->tableLearning->setColumnCount(7);
+    ui->tableLearning->setColumnCount(6);
     QStringList headers = {"ID", "Оценка", "Дата", "Teacher ID", "SemCourse ID", "Student ID"};
     ui->tableLearning->setHorizontalHeaderLabels(headers);
-
     for (int i = 0; i < learnings.size(); ++i) {
         const StudentLearning& l = learnings[i];
         ui->tableLearning->setItem(i, 0, new QTableWidgetItem(QString::number(l.id())));

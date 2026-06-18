@@ -1,27 +1,60 @@
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-CONFIG += c++17
-
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+QT += core gui sql widgets
 
 SOURCES += \
     main.cpp \
-    MainWindow.cpp
+    views/MainWindow.cpp \
+    views/LoginWindow.cpp \
+    controllers/AuthController.cpp \
+    controllers/StudentController.cpp \
+    controllers/TeacherController.cpp \
+    controllers/ElectiveController.cpp \
+    controllers/LearningController.cpp \
+    database/DatabaseManager.cpp \
+    models/Student.cpp \
+    models/User.cpp \
+    models/Teacher.cpp \
+    models/Elective.cpp \
+    models/SemesterCourse.cpp \
+    models/Lesson.cpp \
+    models/StudentLearning.cpp \
+    repositories/StudentRepository.cpp \
+    repositories/UserRepository.cpp \
+    repositories/TeacherRepository.cpp \
+    repositories/ElectiveRepository.cpp \
+    repositories/SemesterCourseRepository.cpp \
+    repositories/LessonRepository.cpp \
+    repositories/StudentLearningRepository.cpp \
+    views/RegisterWindow.cpp
 
 HEADERS += \
-    MainWindow.h
+    views/MainWindow.h \
+    views/LoginWindow.h \
+    controllers/AuthController.h \
+    controllers/StudentController.h \
+    controllers/TeacherController.h \
+    controllers/ElectiveController.h \
+    controllers/LearningController.h \
+    database/DatabaseManager.h \
+    models/Student.h \
+    models/User.h \
+    models/Teacher.h \
+    models/Elective.h \
+    models/SemesterCourse.h \
+    models/Lesson.h \
+    models/StudentLearning.h \
+    repositories/StudentRepository.h \
+    repositories/UserRepository.h \
+    repositories/TeacherRepository.h \
+    repositories/ElectiveRepository.h \
+    repositories/SemesterCourseRepository.h \
+    repositories/LessonRepository.h \
+    repositories/StudentLearningRepository.h \
+    views/RegisterWindow.h
 
 FORMS += \
-    mainwindow.ui
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+    views/loginwindow.ui \
+    views/mainwindow.ui \
+    views/registerwindow.ui
 
 DISTFILES += \
     .gitignore
