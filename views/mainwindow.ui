@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1200</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Управление факультативами</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tabStudents">
+       <attribute name="title">
+        <string>Студенты</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayoutStudents">
+        <item>
+         <widget class="QGroupBox" name="groupStudentInput">
+          <property name="title">
+           <string>Данные студента</string>
+          </property>
+          <layout class="QGridLayout" name="gridStudent">
+           <item row="0" column="0"><widget class="QLabel" name="labelStudentId"><property name="text"><string>ID</string></property></widget></item>
+           <item row="0" column="1"><widget class="QLineEdit" name="lineStudentId"/></item>
+           <item row="0" column="2"><widget class="QLabel" name="labelStudentLastName"><property name="text"><string>Фамилия</string></property></widget></item>
+           <item row="0" column="3"><widget class="QLineEdit" name="lineStudentLastName"/></item>
+           <item row="1" column="0"><widget class="QLabel" name="labelStudentFirstName"><property name="text"><string>Имя</string></property></widget></item>
+           <item row="1" column="1"><widget class="QLineEdit" name="lineStudentFirstName"/></item>
+           <item row="1" column="2"><widget class="QLabel" name="labelStudentMiddleName"><property name="text"><string>Отчество</string></property></widget></item>
+           <item row="1" column="3"><widget class="QLineEdit" name="lineStudentMiddleName"/></item>
+           <item row="2" column="0"><widget class="QLabel" name="labelStudentPhone"><property name="text"><string>Телефон</string></property></widget></item>
+           <item row="2" column="1"><widget class="QLineEdit" name="lineStudentPhone"/></item>
+           <item row="2" column="2"><widget class="QLabel" name="labelStudentAddress"><property name="text"><string>Адрес</string></property></widget></item>
+           <item row="2" column="3"><widget class="QLineEdit" name="lineStudentAddress"/></item>
+           <item row="3" column="0" colspan="4">
+            <layout class="QHBoxLayout" name="hlStudentButtons">
+             <item><widget class="QPushButton" name="btnStudentAdd"><property name="text"><string>Добавить</string></property></widget></item>
+             <item><widget class="QPushButton" name="btnStudentUpdate"><property name="text"><string>Обновить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnStudentDelete"><property name="text"><string>Удалить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnStudentClear"><property name="text"><string>Очистить</string></property></widget></item>
+             <item><spacer name="horizontalSpacerStudent"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item><widget class="QTableWidget" name="tableStudent"/></item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabTeachers">
+       <attribute name="title">
+        <string>Преподаватели</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayoutTeachers">
+        <item>
+         <widget class="QGroupBox" name="groupTeacherInput">
+          <property name="title">
+           <string>Данные преподавателя</string>
+          </property>
+          <layout class="QGridLayout" name="gridTeacher">
+           <item row="0" column="0"><widget class="QLabel" name="labelTeacherId"><property name="text"><string>ID</string></property></widget></item>
+           <item row="0" column="1"><widget class="QLineEdit" name="lineTeacherId"/></item>
+           <item row="0" column="2"><widget class="QLabel" name="labelTeacherLastName"><property name="text"><string>Фамилия</string></property></widget></item>
+           <item row="0" column="3"><widget class="QLineEdit" name="lineTeacherLastName"/></item>
+           <item row="1" column="0"><widget class="QLabel" name="labelTeacherFirstName"><property name="text"><string>Имя</string></property></widget></item>
+           <item row="1" column="1"><widget class="QLineEdit" name="lineTeacherFirstName"/></item>
+           <item row="1" column="2"><widget class="QLabel" name="labelTeacherMiddleName"><property name="text"><string>Отчество</string></property></widget></item>
+           <item row="1" column="3"><widget class="QLineEdit" name="lineTeacherMiddleName"/></item>
+           <item row="2" column="0"><widget class="QLabel" name="labelTeacherPhone"><property name="text"><string>Телефон</string></property></widget></item>
+           <item row="2" column="1"><widget class="QLineEdit" name="lineTeacherPhone"/></item>
+           <item row="2" column="2"><widget class="QLabel" name="labelTeacherUserId"><property name="text"><string>User ID</string></property></widget></item>
+           <item row="2" column="3"><widget class="QLineEdit" name="lineTeacherUserId"/></item>
+           <item row="3" column="0" colspan="4">
+            <layout class="QHBoxLayout" name="hlTeacherButtons">
+             <item><widget class="QPushButton" name="btnTeacherAdd"><property name="text"><string>Добавить</string></property></widget></item>
+             <item><widget class="QPushButton" name="btnTeacherUpdate"><property name="text"><string>Обновить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnTeacherDelete"><property name="text"><string>Удалить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnTeacherClear"><property name="text"><string>Очистить</string></property></widget></item>
+             <item><spacer name="horizontalSpacerTeacher"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item><widget class="QTableWidget" name="tableTeacher"/></item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabElectives">
+       <attribute name="title">
+        <string>Факультативы</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayoutElectives">
+        <item>
+         <widget class="QGroupBox" name="groupElectiveInput">
+          <property name="title">
+           <string>Данные факультатива</string>
+          </property>
+          <layout class="QGridLayout" name="gridElective">
+           <item row="0" column="0"><widget class="QLabel" name="labelElectiveId"><property name="text"><string>ID</string></property></widget></item>
+           <item row="0" column="1"><widget class="QLineEdit" name="lineElectiveId"/></item>
+           <item row="0" column="2"><widget class="QLabel" name="labelElectiveName"><property name="text"><string>Название</string></property></widget></item>
+           <item row="0" column="3"><widget class="QLineEdit" name="lineElectiveName"/></item>
+           <item row="1" column="0"><widget class="QLabel" name="labelElectiveDepartmentId"><property name="text"><string>Кафедра ID</string></property></widget></item>
+           <item row="1" column="1"><widget class="QLineEdit" name="lineElectiveDepartmentId"/></item>
+           <item row="2" column="0" colspan="4">
+            <layout class="QHBoxLayout" name="hlElectiveButtons">
+             <item><widget class="QPushButton" name="btnElectiveAdd"><property name="text"><string>Добавить</string></property></widget></item>
+             <item><widget class="QPushButton" name="btnElectiveUpdate"><property name="text"><string>Обновить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnElectiveDelete"><property name="text"><string>Удалить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnElectiveClear"><property name="text"><string>Очистить</string></property></widget></item>
+             <item><spacer name="horizontalSpacerElective"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item><widget class="QTableWidget" name="tableElective"/></item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabLearning">
+       <attribute name="title">
+        <string>Обучение</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayoutLearning">
+        <item>
+         <widget class="QGroupBox" name="groupLearningInput">
+          <property name="title">
+           <string>Данные об обучении</string>
+          </property>
+          <layout class="QGridLayout" name="gridLearning">
+           <item row="0" column="0"><widget class="QLabel" name="labelLearningId"><property name="text"><string>ID</string></property></widget></item>
+           <item row="0" column="1"><widget class="QLineEdit" name="lineLearningId"/></item>
+           <item row="0" column="2"><widget class="QLabel" name="labelLearningGrade"><property name="text"><string>Оценка</string></property></widget></item>
+           <item row="0" column="3"><widget class="QLineEdit" name="lineLearningGrade"/></item>
+           <item row="1" column="0"><widget class="QLabel" name="labelLearningExamDate"><property name="text"><string>Дата экзамена</string></property></widget></item>
+           <item row="1" column="1"><widget class="QDateEdit" name="dateLearningExam"/></item>
+           <item row="1" column="2"><widget class="QLabel" name="labelLearningTeacherId"><property name="text"><string>Teacher ID</string></property></widget></item>
+           <item row="1" column="3"><widget class="QLineEdit" name="lineLearningTeacherId"/></item>
+           <item row="2" column="0"><widget class="QLabel" name="labelLearningSemesterCourseId"><property name="text"><string>SemCourse ID</string></property></widget></item>
+           <item row="2" column="1"><widget class="QLineEdit" name="lineLearningSemesterCourseId"/></item>
+           <item row="2" column="2"><widget class="QLabel" name="labelLearningStudentId"><property name="text"><string>Student ID</string></property></widget></item>
+           <item row="2" column="3"><widget class="QLineEdit" name="lineLearningStudentId"/></item>
+           <item row="3" column="0" colspan="4">
+            <layout class="QHBoxLayout" name="hlLearningButtons">
+             <item><widget class="QPushButton" name="btnLearningAdd"><property name="text"><string>Добавить</string></property></widget></item>
+             <item><widget class="QPushButton" name="btnLearningUpdate"><property name="text"><string>Обновить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnLearningDelete"><property name="text"><string>Удалить</string></property><property name="enabled"><bool>false</bool></property></widget></item>
+             <item><widget class="QPushButton" name="btnLearningClear"><property name="text"><string>Очистить</string></property></widget></item>
+             <item><spacer name="horizontalSpacerLearning"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property></spacer></item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item><widget class="QTableWidget" name="tableLearning"/></item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item><widget class="QStatusBar" name="statusbar"/></item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
