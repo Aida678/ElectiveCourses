@@ -65,21 +65,54 @@ QString AuthController::roleDisplayName() const
 
 bool AuthController::registerUser(const QString& email, const QString& password, QString& errorMessage)
 {
-    if (email.isEmpty() || password.isEmpty()) {
-        errorMessage = "Email и пароль не могут быть пустыми.";
+    // 1. Проверка email (простая, но достаточная)
+    if (!email.contains('@') || !email.contains('.')) {
+        errorMessage = "Введите корректный email (например, user@mail.ru).";
         return false;
     }
-    if (password.length() < 6) {
-        errorMessage = "Пароль должен содержать минимум 6 символов.";
+    // Дополнительно: проверим, что @ не первый и не последний символ, и после точки есть буквы
+    int atPos = email.indexOf('@');
+    int dotPos = email.lastIndexOf('.');
+    if (atPos <= 0 || dotPos <= atPos + 1 || dotPos >= email.length() - 1) {
+        errorMessage = "Email должен содержать '@' и домен (например, .ru, .com).";
         return false;
     }
 
+    // 2. Проверка пароля (по заданию)
+    if (password.length() < 8) {
+        errorMessage = "Пароль должен содержать минимум 8 символов.";
+        return false;
+    }
+
+    bool hasDigit = false;
+    bool hasUpper = false;
+    bool hasSpecial = false;
+    for (QChar ch : password) {
+        if (ch.isDigit()) hasDigit = true;
+        else if (ch.isUpper()) hasUpper = true;
+        else if (QString("!@#$%^&*()_+-=<>?/.,;:").contains(ch)) hasSpecial = true;
+    }
+    if (!hasDigit) {
+        errorMessage = "Пароль должен содержать хотя бы одну цифру.";
+        return false;
+    }
+    if (!hasUpper) {
+        errorMessage = "Пароль должен содержать хотя бы одну заглавную букву.";
+        return false;
+    }
+    if (!hasSpecial) {
+        errorMessage = "Пароль должен содержать хотя бы один спецсимвол (!@#$%^&*()_+-=<>?/.,;:).";
+        return false;
+    }
+
+    // 3. Проверяем, существует ли уже такой пользователь
     UserRepository repo;
     if (repo.findByEmail(email).id() != 0) {
         errorMessage = "Пользователь с таким email уже существует.";
         return false;
     }
 
+    // 4. Хешируем пароль и сохраняем
     QString hash = QString::fromUtf8(
         QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Sha256).toHex()
         );
