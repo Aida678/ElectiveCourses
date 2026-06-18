@@ -1,4 +1,5 @@
 #include "Teacher.h"
+#include <QVariant>
 
 Teacher::Teacher(int id, const QString& lastName, const QString& firstName,
                  const QString& middleName, const QString& phone, int userId)

@@ -1,4 +1,5 @@
 #include "SemesterCourse.h"
+#include <QVariant>
 
 SemesterCourse::SemesterCourse(int id, int semesterNumber, const QString& academicYear, int electiveId)
     : m_id(id)

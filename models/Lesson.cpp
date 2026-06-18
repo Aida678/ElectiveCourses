@@ -1,4 +1,5 @@
 #include "Lesson.h"
+#include <QVariant>
 
 Lesson::Lesson(int id, int hoursCount, int teacherId, int lessonTypeId, int semesterCourseId)
     : m_id(id)

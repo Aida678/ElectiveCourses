@@ -1,4 +1,5 @@
 #include "StudentLearning.h"
+#include <QVariant>
 
 StudentLearning::StudentLearning(int id, int grade, const QDate& examDate,
                                  int teacherId, int semesterCourseId, int studentId)

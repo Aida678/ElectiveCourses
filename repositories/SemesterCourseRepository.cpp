@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include <QVariant>
 
 SemesterCourseRepository::SemesterCourseRepository()
 {

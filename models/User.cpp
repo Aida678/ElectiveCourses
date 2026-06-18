@@ -1,4 +1,5 @@
 #include "User.h"
+#include <QVariant>
 
 User::User(int id, const QString& email, const QString& passwordHash)
     : m_id(id), m_email(email), m_passwordHash(passwordHash)

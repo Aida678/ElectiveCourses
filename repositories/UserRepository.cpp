@@ -3,6 +3,7 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QCryptographicHash>
+#include <QVariant>
 
 UserRepository::UserRepository()
 {

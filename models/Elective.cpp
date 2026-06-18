@@ -1,4 +1,5 @@
 #include "Elective.h"
+#include <QVariant>
 
 Elective::Elective(int id, const QString& name, int departmentId)
     : m_id(id), m_name(name), m_departmentId(departmentId)
