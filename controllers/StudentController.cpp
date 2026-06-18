@@ -1,9 +1,10 @@
 #include "StudentController.h"
 #include "views/MainWindow.h"
+#include "controllers/AuthController.h"
 #include <QMessageBox>
 
-StudentController::StudentController(MainWindow* view, QObject *parent)
-    : QObject(parent), m_view(view)
+StudentController::StudentController(MainWindow* view, AuthController* auth, QObject *parent)
+    : QObject(parent), m_view(view), m_auth(auth)
 {
     loadStudents();
 }
@@ -12,12 +13,16 @@ void StudentController::loadStudents()
 {
     m_students = m_repo.findAll();
     m_view->updateStudentTable(m_students);
-    m_view->clearInputFields();
+    m_view->clearStudentInputFields();
     m_view->showStatusMessage("Загружено " + QString::number(m_students.size()) + " студентов");
 }
 
 void StudentController::addStudent(const Student& student)
 {
+    if (!m_auth->canCreateStudent()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (student.lastName().isEmpty() || student.firstName().isEmpty() || student.phone().isEmpty()) {
         QMessageBox::warning(m_view, "Ошибка", "Фамилия, имя и телефон обязательны.");
         return;
@@ -34,6 +39,10 @@ void StudentController::addStudent(const Student& student)
 
 void StudentController::updateStudent(const Student& student)
 {
+    if (!m_auth->canUpdateStudent()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (student.id() == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите студента.");
         return;
@@ -49,6 +58,10 @@ void StudentController::updateStudent(const Student& student)
 
 void StudentController::deleteStudent(int id)
 {
+    if (!m_auth->canDeleteStudent()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (id == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите студента.");
         return;
@@ -67,6 +80,6 @@ void StudentController::deleteStudent(int id)
 void StudentController::selectStudent(int row)
 {
     if (row < 0 || row >= m_students.size()) return;
-    m_view->setInputFields(m_students[row]);
+    m_view->setStudentInputFields(m_students[row]);
     m_view->showStatusMessage("Выбран: " + m_students[row].lastName() + " " + m_students[row].firstName());
 }

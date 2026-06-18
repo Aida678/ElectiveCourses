@@ -6,13 +6,14 @@
 #include "models/Elective.h"
 
 class MainWindow;
+class AuthController;
 
 class ElectiveController : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit ElectiveController(MainWindow* view, QObject *parent = nullptr);
+    explicit ElectiveController(MainWindow* view, AuthController* auth, QObject *parent = nullptr);
 
 public slots:
     void loadElectives();
@@ -23,6 +24,7 @@ public slots:
 
 private:
     MainWindow* m_view;
+    AuthController* m_auth;
     ElectiveRepository m_repo;
     QList<Elective> m_electives;
 };

@@ -1,9 +1,10 @@
 #include "ElectiveController.h"
 #include "views/MainWindow.h"
+#include "controllers/AuthController.h"
 #include <QMessageBox>
 
-ElectiveController::ElectiveController(MainWindow* view, QObject *parent)
-    : QObject(parent), m_view(view)
+ElectiveController::ElectiveController(MainWindow* view, AuthController* auth, QObject *parent)
+    : QObject(parent), m_view(view), m_auth(auth)
 {
     loadElectives();
 }
@@ -18,6 +19,10 @@ void ElectiveController::loadElectives()
 
 void ElectiveController::addElective(const Elective& elective)
 {
+    if (!m_auth->canCreateElective()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (elective.name().isEmpty() || elective.departmentId() == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Название и кафедра обязательны.");
         return;
@@ -34,6 +39,10 @@ void ElectiveController::addElective(const Elective& elective)
 
 void ElectiveController::updateElective(const Elective& elective)
 {
+    if (!m_auth->canUpdateElective()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (elective.id() == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите факультатив.");
         return;
@@ -49,6 +58,10 @@ void ElectiveController::updateElective(const Elective& elective)
 
 void ElectiveController::deleteElective(int id)
 {
+    if (!m_auth->canDeleteElective()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (id == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите факультатив.");
         return;

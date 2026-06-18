@@ -6,13 +6,14 @@
 #include "models/StudentLearning.h"
 
 class MainWindow;
+class AuthController;
 
 class LearningController : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit LearningController(MainWindow* view, QObject *parent = nullptr);
+    explicit LearningController(MainWindow* view, AuthController* auth, QObject *parent = nullptr);
 
 public slots:
     void loadLearnings();
@@ -23,6 +24,7 @@ public slots:
 
 private:
     MainWindow* m_view;
+    AuthController* m_auth;
     StudentLearningRepository m_repo;
     QList<StudentLearning> m_learnings;
 };

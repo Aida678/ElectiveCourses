@@ -5,14 +5,15 @@
 #include "repositories/TeacherRepository.h"
 #include "models/Teacher.h"
 
-class MainWindow; // forward declaration
+class MainWindow;
+class AuthController;
 
 class TeacherController : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit TeacherController(MainWindow* view, QObject *parent = nullptr);
+    explicit TeacherController(MainWindow* view, AuthController* auth, QObject *parent = nullptr);
 
 public slots:
     void loadTeachers();
@@ -23,6 +24,7 @@ public slots:
 
 private:
     MainWindow* m_view;
+    AuthController* m_auth;
     TeacherRepository m_repo;
     QList<Teacher> m_teachers;
 };

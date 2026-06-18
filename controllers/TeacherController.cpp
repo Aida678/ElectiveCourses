@@ -1,9 +1,10 @@
 #include "TeacherController.h"
 #include "views/MainWindow.h"
+#include "controllers/AuthController.h"
 #include <QMessageBox>
 
-TeacherController::TeacherController(MainWindow* view, QObject *parent)
-    : QObject(parent), m_view(view)
+TeacherController::TeacherController(MainWindow* view, AuthController* auth, QObject *parent)
+    : QObject(parent), m_view(view), m_auth(auth)
 {
     loadTeachers();
 }
@@ -18,6 +19,10 @@ void TeacherController::loadTeachers()
 
 void TeacherController::addTeacher(const Teacher& teacher)
 {
+    if (!m_auth->canCreateTeacher()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (teacher.lastName().isEmpty() || teacher.firstName().isEmpty() || teacher.phone().isEmpty()) {
         QMessageBox::warning(m_view, "Ошибка", "Фамилия, имя и телефон обязательны.");
         return;
@@ -34,6 +39,10 @@ void TeacherController::addTeacher(const Teacher& teacher)
 
 void TeacherController::updateTeacher(const Teacher& teacher)
 {
+    if (!m_auth->canUpdateTeacher()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (teacher.id() == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите преподавателя.");
         return;
@@ -49,6 +58,10 @@ void TeacherController::updateTeacher(const Teacher& teacher)
 
 void TeacherController::deleteTeacher(int id)
 {
+    if (!m_auth->canDeleteTeacher()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (id == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите преподавателя.");
         return;

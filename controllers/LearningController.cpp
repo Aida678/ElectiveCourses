@@ -1,9 +1,10 @@
 #include "LearningController.h"
 #include "views/MainWindow.h"
+#include "controllers/AuthController.h"
 #include <QMessageBox>
 
-LearningController::LearningController(MainWindow* view, QObject *parent)
-    : QObject(parent), m_view(view)
+LearningController::LearningController(MainWindow* view, AuthController* auth, QObject *parent)
+    : QObject(parent), m_view(view), m_auth(auth)
 {
     loadLearnings();
 }
@@ -18,6 +19,17 @@ void LearningController::loadLearnings()
 
 void LearningController::addLearning(const StudentLearning& learning)
 {
+    if (!m_auth->canCreateExamSheet()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
+    // Если преподаватель, проверяем, что teacher_id совпадает с его ID
+    if (m_auth->currentRole() == "teacher") {
+        if (learning.teacherId() != m_auth->currentTeacherId()) {
+            QMessageBox::warning(m_view, "Ошибка", "Вы можете добавлять только свои ведомости.");
+            return;
+        }
+    }
     if (learning.studentId() == 0 || learning.semesterCourseId() == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Студент и семестровый курс обязательны.");
         return;
@@ -34,9 +46,21 @@ void LearningController::addLearning(const StudentLearning& learning)
 
 void LearningController::updateLearning(const StudentLearning& learning)
 {
+    if (!m_auth->canUpdateExamSheet()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (learning.id() == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите запись.");
         return;
+    }
+    // Если преподаватель, проверяем принадлежность
+    if (m_auth->currentRole() == "teacher") {
+        StudentLearning existing = m_repo.findById(learning.id());
+        if (existing.teacherId() != m_auth->currentTeacherId()) {
+            QMessageBox::warning(m_view, "Ошибка", "Вы можете редактировать только свои ведомости.");
+            return;
+        }
     }
 
     if (m_repo.update(learning)) {
@@ -49,9 +73,21 @@ void LearningController::updateLearning(const StudentLearning& learning)
 
 void LearningController::deleteLearning(int id)
 {
+    if (!m_auth->canDeleteExamSheet()) {
+        QMessageBox::warning(m_view, "Ошибка", "Недостаточно прав.");
+        return;
+    }
     if (id == 0) {
         QMessageBox::warning(m_view, "Ошибка", "Выберите запись.");
         return;
+    }
+    // Если преподаватель, проверяем принадлежность
+    if (m_auth->currentRole() == "teacher") {
+        StudentLearning existing = m_repo.findById(id);
+        if (existing.teacherId() != m_auth->currentTeacherId()) {
+            QMessageBox::warning(m_view, "Ошибка", "Вы можете удалять только свои ведомости.");
+            return;
+        }
     }
 
     if (QMessageBox::question(m_view, "Удаление", "Удалить запись?") == QMessageBox::Yes) {
