@@ -7,6 +7,10 @@
 #include "models/Teacher.h"
 #include "models/Elective.h"
 #include "models/StudentLearning.h"
+#include "models/StudentGrade.h"
+#include <QComboBox>
+#include <QTableWidget>
+#include <QAction>
 
 namespace Ui { class MainWindow; }
 
@@ -69,6 +73,10 @@ private slots:
     void onLearningClearClicked();
     void onLearningTableClicked(int row, int column);
 
+    void onLoadGradesClicked();
+    void onElectiveChanged(int index);
+    void onProfileClicked();
+
 private:
     Ui::MainWindow *ui;
     User m_currentUser;
@@ -77,6 +85,14 @@ private:
     TeacherController* m_teacherController;
     ElectiveController* m_electiveController;
     LearningController* m_learningController;
+    QWidget* m_tabGrades;
+    QComboBox* m_comboElective;
+    QTableWidget* m_tableGrades;
+    QAction* m_profileAction;
+    void setupGradesTab();
+    void loadGradesForElective(int electiveId);
+    void updateGradesTable(const QList<StudentGrade>& grades);
+    void fillElectiveCombo();
 };
 
 #endif // MAINWINDOW_H

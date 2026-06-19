@@ -12,6 +12,7 @@ public:
 
     bool login(const QString& email, const QString& password);
     void logout();
+    void updateCurrentUser(const User& user) { m_user = user; }
     User currentUser() const { return m_user; }
 
     QString currentRole() const { return m_role; }

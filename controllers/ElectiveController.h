@@ -4,6 +4,7 @@
 #include <QObject>
 #include "repositories/ElectiveRepository.h"
 #include "models/Elective.h"
+#include "models/StudentGrade.h"
 
 class MainWindow;
 class AuthController;
@@ -21,6 +22,9 @@ public slots:
     void updateElective(const Elective& elective);
     void deleteElective(int id);
     void selectElective(int row);
+
+    QList<Elective> getAllElectives() const;
+    QList<StudentGrade> getStudentGradesForElective(int electiveId);
 
 private:
     MainWindow* m_view;

@@ -1,7 +1,13 @@
 #include "ElectiveController.h"
+#include "database/DatabaseManager.h"
+#include "database/DatabaseManager.h"
 #include "views/MainWindow.h"
 #include "controllers/AuthController.h"
 #include <QMessageBox>
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QVariant>
+#include <QDebug>
 
 ElectiveController::ElectiveController(MainWindow* view, AuthController* auth, QObject *parent)
     : QObject(parent), m_view(view), m_auth(auth)
@@ -82,4 +88,43 @@ void ElectiveController::selectElective(int row)
     if (row < 0 || row >= m_electives.size()) return;
     m_view->setElectiveInputFields(m_electives[row]);
     m_view->showStatusMessage("Выбран: " + m_electives[row].name());
+}
+
+QList<Elective> ElectiveController::getAllElectives() const
+{
+    return m_electives;
+}
+
+QList<StudentGrade> ElectiveController::getStudentGradesForElective(int electiveId)
+{
+    QList<StudentGrade> result;
+    QSqlDatabase db = DatabaseManager::instance().database();
+    if (!db.isOpen()) return result;
+
+    QSqlQuery query(db);
+    query.prepare(R"(
+        SELECT s.id, s.last_name, s.first_name, s.middle_name, se.final_grade
+        FROM students s
+        JOIN student_electives se ON se.student_id = s.id
+        WHERE se.elective_id = ?
+        ORDER BY s.last_name, s.first_name
+    )");
+    query.bindValue(0, electiveId);
+
+    if (!query.exec()) {
+        qWarning() << "Ошибка загрузки итоговых оценок:" << query.lastError().text();
+        return result;
+    }
+
+    while (query.next()) {
+        StudentGrade grade(
+            query.value("id").toInt(),
+            query.value("last_name").toString(),
+            query.value("first_name").toString(),
+            query.value("middle_name").toString(),
+            query.value("final_grade").toInt()
+            );
+        result.append(grade);
+    }
+    return result;
 }

@@ -6,8 +6,15 @@
 #include "controllers/TeacherController.h"
 #include "controllers/ElectiveController.h"
 #include "controllers/LearningController.h"
+#include "views/ProfileDialog.h"
 #include <QMessageBox>
 #include <QTableWidgetItem>
+#include <QComboBox>
+#include <QTableWidget>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent, AuthController* auth, const User& user)
     : QMainWindow(parent)
@@ -16,6 +23,11 @@ MainWindow::MainWindow(QWidget *parent, AuthController* auth, const User& user)
     , m_auth(auth)
 {
     ui->setupUi(this);
+    QPushButton* profileBtn = new QPushButton("Профиль");
+    profileBtn->setIcon(QIcon::fromTheme("user", QIcon(":/icons/user.png")));
+    ui->statusbar->addPermanentWidget(profileBtn);
+    connect(profileBtn, &QPushButton::clicked, this, &MainWindow::onProfileClicked);
+
     setWindowTitle(QString("Управление факультативами - %1 (%2)")
                        .arg(m_currentUser.email())
                        .arg(m_auth ? m_auth->roleDisplayName() : "Без роли"));
@@ -61,6 +73,8 @@ MainWindow::MainWindow(QWidget *parent, AuthController* auth, const User& user)
     connect(ui->btnLearningClear, &QPushButton::clicked, this, &MainWindow::onLearningClearClicked);
     connect(ui->tableLearning, &QTableWidget::cellClicked, this, &MainWindow::onLearningTableClicked);
 
+    setupGradesTab();
+    fillElectiveCombo();
     updateUiForRole();
 }
 
@@ -432,4 +446,84 @@ void MainWindow::showStatusMessage(const QString& msg, bool isError)
     else
         ui->statusbar->setStyleSheet("");
     ui->statusbar->showMessage(msg, 5000);
+}
+
+void MainWindow::setupGradesTab()
+{
+    m_tabGrades = new QWidget();
+    ui->tabWidget->addTab(m_tabGrades, "Ведомость");
+
+    QVBoxLayout* layout = new QVBoxLayout(m_tabGrades);
+
+    QHBoxLayout* topLayout = new QHBoxLayout();
+    QLabel* label = new QLabel("Факультатив:");
+    m_comboElective = new QComboBox();
+    m_comboElective->addItem("— Выберите факультатив —", 0);
+    QPushButton* btnLoad = new QPushButton("Загрузить");
+    topLayout->addWidget(label);
+    topLayout->addWidget(m_comboElective);
+    topLayout->addWidget(btnLoad);
+    topLayout->addStretch();
+
+    m_tableGrades = new QTableWidget();
+    m_tableGrades->setColumnCount(3);
+    m_tableGrades->setHorizontalHeaderLabels({"ID", "Студент", "Итоговая оценка"});
+    m_tableGrades->horizontalHeader()->setStretchLastSection(true);
+
+    layout->addLayout(topLayout);
+    layout->addWidget(m_tableGrades);
+
+    connect(btnLoad, &QPushButton::clicked, this, &MainWindow::onLoadGradesClicked);
+    connect(m_comboElective, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &MainWindow::onElectiveChanged);
+}
+
+void MainWindow::fillElectiveCombo()
+{
+    m_comboElective->clear();
+    m_comboElective->addItem("— Выберите факультатив —", 0);
+    QList<Elective> electives = m_electiveController->getAllElectives();
+    for (const Elective& e : electives) {
+        m_comboElective->addItem(e.name(), e.id());
+    }
+}
+
+void MainWindow::onLoadGradesClicked()
+{
+    int electiveId = m_comboElective->currentData().toInt();
+    loadGradesForElective(electiveId);
+}
+
+void MainWindow::onElectiveChanged(int index)
+{
+    Q_UNUSED(index);
+    // Можно загружать автоматически при выборе, но мы оставим по кнопке
+}
+
+void MainWindow::loadGradesForElective(int electiveId)
+{
+    if (electiveId == 0) {
+        m_tableGrades->setRowCount(0);
+        return;
+    }
+    QList<StudentGrade> grades = m_electiveController->getStudentGradesForElective(electiveId);
+    updateGradesTable(grades);
+}
+
+void MainWindow::updateGradesTable(const QList<StudentGrade>& grades)
+{
+    m_tableGrades->setRowCount(grades.size());
+    for (int i = 0; i < grades.size(); ++i) {
+        const StudentGrade& g = grades[i];
+        m_tableGrades->setItem(i, 0, new QTableWidgetItem(QString::number(g.studentId())));
+        m_tableGrades->setItem(i, 1, new QTableWidgetItem(g.fullName()));
+        m_tableGrades->setItem(i, 2, new QTableWidgetItem(g.finalGrade() > 0 ? QString::number(g.finalGrade()) : "—"));
+    }
+    m_tableGrades->resizeColumnsToContents();
+}
+
+void MainWindow::onProfileClicked()
+{
+    ProfileDialog dialog(m_auth, this);
+    dialog.exec();
 }
