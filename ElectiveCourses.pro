@@ -2,6 +2,7 @@ QT += core gui sql widgets
 
 SOURCES += \
     main.cpp \
+    models/StudentGrade.cpp \
     views/MainWindow.cpp \
     views/LoginWindow.cpp \
     controllers/AuthController.cpp \
@@ -24,9 +25,11 @@ SOURCES += \
     repositories/SemesterCourseRepository.cpp \
     repositories/LessonRepository.cpp \
     repositories/StudentLearningRepository.cpp \
+    views/ProfileDialog.cpp \
     views/RegisterWindow.cpp
 
 HEADERS += \
+    models/StudentGrade.h \
     views/MainWindow.h \
     views/LoginWindow.h \
     controllers/AuthController.h \
@@ -49,6 +52,7 @@ HEADERS += \
     repositories/SemesterCourseRepository.h \
     repositories/LessonRepository.h \
     repositories/StudentLearningRepository.h \
+    views/ProfileDialog.h \
     views/RegisterWindow.h
 
 FORMS += \
